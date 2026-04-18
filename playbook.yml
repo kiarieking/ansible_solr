@@ -26,4 +26,18 @@
         remote_src: true
         creates: "{{ download_dir }}/solr-{{ solr_version }}/README.txt"
 
-        
+    - name: Run Solr installation script  
+      command: >
+        {{ download_dir }}/solr-{{ solr_version }}/bin/install_solr_ser vice.sh
+
+        {{ download_dir }}/solr-{{ solr_version }}.tgz
+        -i opt 
+        -d /var/solr 
+        -u solr 
+        -s solr 
+        -p 8983
+        creates={{ solr_dir }}/bin/solr 
+
+    - name: Ensure solr is started and enabled on boot
+      service: name=solr state=started enabled=yes
+      
