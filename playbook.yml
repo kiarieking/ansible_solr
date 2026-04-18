@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: true
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+    - name: Update cache if needed
+      apt: update_cache=true cache_valid_time=3600
