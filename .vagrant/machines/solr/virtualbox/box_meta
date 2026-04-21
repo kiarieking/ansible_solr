@@ -1,1 +1,1 @@
-{"name":"ubuntu/xenial64","version":"20211001.0.5","provider":"virtualbox","directory":"boxes/ubuntu-VAGRANTSLASH-xenial64/20211001.0.5/virtualbox"}
+{"name":"cdsn/debian13","version":"1.0.0","provider":"virtualbox","directory":"boxes/cdsn-VAGRANTSLASH-debian13/1.0.0/amd64/virtualbox"}

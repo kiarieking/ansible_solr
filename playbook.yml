@@ -1,17 +1,18 @@
 ---
 - hosts: all
-  become: true
+  become: yes
+  remote_user: vagrant
 
   vars_files:
     - vars.yml
 
-  pre_tasks:
-    - name: Update cache if needed
-      apt: update_cache=true cache_valid_time=3600
+  # pre_tasks:
+  #   - name: Update cache if needed
+  #     apt: update_cache=true cache_valid_time=3600
 
   tasks:
     - name: Install java
-      apt: name=openjdk-11-jdk state=present
+      apt: name=default-jre state=present
 
     - name: Download Solr 
       get_url: 

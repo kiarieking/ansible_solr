@@ -1,5 +1,5 @@
 Vagrant.configure("2") do |config|
-    config.vm.box = "ubuntu/xenial64"
+    config.vm.box = "cdsn/debian13"
 
     config.ssh.insert_key = true
 
@@ -13,6 +13,6 @@ Vagrant.configure("2") do |config|
 # App Server 1
     config.vm.define "solr" do |app|
         app.vm.hostname = "solr-vm.test"
-        app.vm.network :private_network, ip: "192.168.56.4"
+        app.vm.network :private_network, ip: "192.168.56.11"
     end
 end
