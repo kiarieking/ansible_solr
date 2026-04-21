@@ -30,20 +30,76 @@
     - name: Change solr directory ownership
       command: >
         sudo chown -R kkiarie:kkiarie /tmp/solr-8.6.0
-  
 
-    - name: Run Solr installation script
-      become: yes  
+    - name: Make solr installation script executable
       command: >
-        {{ download_dir }}/solr-{{ solr_version }}/solr/bin/install_solr_service.sh
+        sudo chmod +x /tmp/solr-8.6.0/solr/bin/install_solr_service.sh
 
-        {{ download_dir }}/solr-{{ solr_version }}.tgz
-        -i opt 
-        -d /var/solr 
-        -u solr 
-        -s solr 
-        -p 8983
-        creates={{ solr_dir }}/bin/solr 
+    - name: Move solr to opt
+      command: mv /tmp/solr-{{ solr_version }} /opt
+      args:
+        creates: /opt/solr-{{ solr_version }}
+      become: yes
+
+    - name: Create solr symlink
+      file:
+        src: /opt/solr-{{ solr_version }}
+        dest: /opt/solr
+        state: link
+      become: yes
+
+    - name: Create data directory
+      file:
+        path: /var/solr
+        state: directory
+        owner: kkiarie
+        group: kkiarie
+      become: yes
+
+    - name: Create solr service
+      copy: 
+        dest: /etc/systemd/system/solr.service
+        content:
+          [Unit]
+          Description=Apache Solr
+          After=network.target
+
+          [Service]
+          Type=forking
+          User=solr
+          ExecStart=/opt/solr/bin/solr start
+          ExecStop=/opt/solr/bin/solr stop
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target  
+      become: yes 
+
+    - name: Reload systemd
+      command: systemctl daemon-Reload
+      become: yes
+
+    - name: Start solr
+      service:
+        name: solr
+        state: started
+        enabled: yes
+      become: yes     
+
+
+    # - name: Run Solr installation script
+    #   become: yes  
+    #   command: >
+
+    #     sudo  {{ download_dir }}/solr-{{ solr_version }}/solr/bin/install_solr_service.sh
+
+    #     {{ download_dir }}/solr-{{ solr_version }}.tgz
+    #     -i /opt 
+    #     -d /var/solr 
+    #     -u kkiarie 
+    #     -s solr 
+    #     -p 8983
+    #     creates={{ solr_dir }}/bin/solr 
 
     - name: Ensure solr is started and enabled on boot
       service: name=solr state=started enabled=yes
