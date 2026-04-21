@@ -1,7 +1,7 @@
 ---
 - hosts: all
   become: yes
-  remote_user: vagrant
+  remote_user: kkiarie
 
   vars_files:
     - vars.yml
@@ -14,11 +14,11 @@
     - name: Install java
       apt: name=default-jre state=present
 
-    - name: Download Solr 
-      get_url: 
-        url: "https://archive.apache.org/dist/lucene/solr/{{ solr_version }}/solr-{{ solr_version }}.tgz"
-        dest: "{{ download_dir }}/solr-{{ solr_version }}.tgz"
-        checksum: "{{ solr_checksum }}"
+    # - name: Download Solr 
+    #   get_url: 
+    #     url: "https://archive.apache.org/dist/lucene/solr/{{ solr_version }}/solr-{{ solr_version }}.tgz"
+    #     dest: "{{ download_dir }}/solr-{{ solr_version }}.tgz"
+    #     # checksum: "{{ solr_checksum }}"
 
     - name: Expand Solr
       unarchive:
@@ -27,9 +27,15 @@
         remote_src: true
         creates: "{{ download_dir }}/solr-{{ solr_version }}/README.txt"
 
-    - name: Run Solr installation script  
+    - name: Change solr directory ownership
       command: >
-        {{ download_dir }}/solr-{{ solr_version }}/bin/install_solr_ser vice.sh
+        sudo chown -R kkiarie:kkiarie /tmp/solr-8.6.0
+  
+
+    - name: Run Solr installation script
+      become: yes  
+      command: >
+        {{ download_dir }}/solr-{{ solr_version }}/solr/bin/install_solr_service.sh
 
         {{ download_dir }}/solr-{{ solr_version }}.tgz
         -i opt 
