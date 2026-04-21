@@ -59,24 +59,36 @@
     - name: Create solr service
       copy: 
         dest: /etc/systemd/system/solr.service
-        content:
+        content: |
           [Unit]
           Description=Apache Solr
           After=network.target
 
           [Service]
           Type=forking
-          User=solr
-          ExecStart=/opt/solr/bin/solr start
-          ExecStop=/opt/solr/bin/solr stop
-          Restart=always
+          User=root
+
+          WorkingDirectory=/opt/solr/solr
+
+          Environment="SOLR_HOME=/var/solr"
+          Environment="SOLR_INCLUDE=/opt/solr/solr/bin/solr.in.sh"
+          Environment="JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64"
+
+          ExecStart=/bin/bash -c '/opt/solr/solr/bin/solr start'
+          ExecStop=/bin/bash -c '/opt/solr/solr/bin/solr stop'
+
+          Restart=on-failure
 
           [Install]
-          WantedBy=multi-user.target  
+          WantedBy=multi-user.target 
       become: yes 
 
+    - name: Make solr file executable
+      command: >
+        sudo chmod +x /opt/solr/solr/bin/solr
+
     - name: Reload systemd
-      command: systemctl daemon-Reload
+      command: systemctl daemon-reload
       become: yes
 
     - name: Start solr

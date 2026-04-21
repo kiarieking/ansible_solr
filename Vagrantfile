@@ -8,6 +8,12 @@ Vagrant.configure("2") do |config|
     config.vm.provider :virtualbox do |v|
         v.memory = 256
         v.linked_clone = true
+        v.customize ['createhd', '--filename', 'extra_disk.vdi', '--size', 2000]
+        v.customize ['storageattach', :id,
+                '--port', 1,
+                '--device', 0,
+                '--type', 'hdd',
+                '--medium', 'extra_disk.vdi']
     end
 
 # App Server 1
